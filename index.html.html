@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fișă interactivă – Rezistența (Matematică + Sport)</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --card2:#0f1730;
+      --text:#e8ecff;
+      --muted:#b8c1ffcc;
+      --accent:#7aa2ff;
+      --ok:#39d98a;
+      --bad:#ff5c7a;
+      --warn:#ffd166;
+      --border:1px solid rgba(255,255,255,.12);
+      --r:18px;
+      --pad:14px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 600px at 20% 10%, rgba(122,162,255,.22), transparent 60%),
+                  radial-gradient(1000px 600px at 80% 30%, rgba(57,217,138,.18), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+    }
+    header{
+      max-width: 1200px;
+      margin: 18px auto 0;
+      padding: 0 14px;
+    }
+    .title{
+      display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: var(--border);
+      border-radius: var(--r);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .badge{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: var(--border);
+      background: rgba(122,162,255,.12);
+      color: var(--text);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    h1{
+      margin: 0;
+      font-size: clamp(18px, 2.5vw, 26px);
+      line-height: 1.2;
+    }
+    .subtitle{
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 80ch;
+    }
+
+    main{
+      max-width: 1200px;
+      margin: 14px auto 40px;
+      padding: 0 14px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+    }
+    @media (max-width: 980px){
+      main{grid-template-columns: 1fr}
+    }
+
+    .card{
+      border: var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border-radius: var(--r);
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+    .card h2{
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .muted{color: var(--muted)}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 600px){
+      .grid{grid-template-columns: 1fr}
+    }
+
+    .control{
+      background: rgba(0,0,0,.15);
+      border: var(--border);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .control label{
+      display:flex;
+      justify-content: space-between;
+      gap:10px;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .control input[type="range"]{ width: 100%;}
+    .control .val{
+      font-family: var(--mono);
+      color: var(--text);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    button{
+      border: var(--border);
+      background: rgba(122,162,255,.14);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 14px;
+      cursor:pointer;
+      font-weight: 600;
+    }
+    button:hover{ filter: brightness(1.08); }
+    button.secondary{ background: rgba(255,255,255,.06); }
+    button.danger{ background: rgba(255,92,122,.14); }
+    .pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: var(--border);
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    canvas{
+      width: 100%;
+      height: 420px;
+      display:block;
+      border-radius: 16px;
+      border: var(--border);
+      background: linear-gradient(180deg, rgba(10,15,30,.8), rgba(10,15,30,.55));
+    }
+
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border: var(--border);
+      background: rgba(0,0,0,.12);
+      font-size: 13px;
+    }
+    th, td{
+      padding: 8px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      text-align: right;
+      white-space: nowrap;
+    }
+    th:first-child, td:first-child{text-align:left;}
+    th{color: var(--muted); font-weight: 700; background: rgba(255,255,255,.04);}
+    tr:last-child td{border-bottom:none;}
+
+    .q{
+      border: var(--border);
+      border-radius: 14px;
+      background: rgba(0,0,0,.12);
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .q p{margin:0 0 8px}
+    .q input[type="number"], .q input[type="text"]{
+      width: 160px;
+      max-width: 100%;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border: var(--border);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      font-family: var(--mono);
+      outline: none;
+    }
+    .feedback{
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .ok{color: var(--ok)}
+    .bad{color: var(--bad)}
+    .warn{color: var(--warn)}
+    .small{font-size:12px}
+    .mono{font-family: var(--mono)}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="title">
+    <div class="badge">Matematică + Sport</div>
+    <div class="badge">Rezistența • Distanță–Timp</div>
+    <div style="flex:1 1 420px">
+      <h1>Fișă interactivă: Rezistența prin grafice și modelare</h1>
+      <div class="subtitle">
+        Controlează parametrii (viteze, oboseală, durată) și urmărește <b>graficul animat</b>. Apoi rezolvă itemii și verifică imediat răspunsurile.
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- LEFT: Simulation -->
+  <section class="card">
+    <h2>1) Simulare grafică animată (Canvas)</h2>
+    <div class="muted small">
+      Graficul arată <b>distanța d(t)</b> (m) în funcție de <b>timp t</b> (minute). Panta reprezintă viteza.
+    </div>
+
+    <div style="margin-top:12px">
+      <canvas id="plot" width="1000" height="520" aria-label="Grafic distanță-timp"></canvas>
+    </div>
+
+    <div class="row" style="margin-top:12px">
+      <button id="btnPlay">▶ Play</button>
+      <button id="btnPause" class="secondary">⏸ Pause</button>
+      <button id="btnReset" class="danger">↺ Reset</button>
+      <span class="pill">t = <span id="tNow" class="mono">0.0</span> min</span>
+      <span class="pill">dA = <span id="dA" class="mono">0</span> m</span>
+      <span class="pill">dB = <span id="dB" class="mono">0</span> m</span>
+      <span class="pill">Lider: <span id="leader" class="mono">—</span></span>
+    </div>
+
+    <div class="grid" style="margin-top:12px">
+      <div class="control">
+        <label>
+          <span>Durata simulării (minute)</span>
+          <span class="val"><span id="durVal">12</span> min</span>
+        </label>
+        <input id="dur" type="range" min="4" max="20" step="1" value="12" />
+        <div class="muted small">Ajustează axa timpului și tabelul.</div>
+      </div>
+
+      <div class="control">
+        <label>
+          <span>Viteză Elev A (m/s) — constantă</span>
+          <span class="val"><span id="vAVal">3.6</span></span>
+        </label>
+        <input id="vA" type="range" min="2.0" max="6.0" step="0.1" value="3.6" />
+        <div class="muted small">Model: dA(t) = vA · t.</div>
+      </div>
+
+      <div class="control">
+        <label>
+          <span>Viteză Elev B înainte de oboseală (m/s)</span>
+          <span class="val"><span id="vB1Val">4.8</span></span>
+        </label>
+        <input id="vB1" type="range" min="2.0" max="7.0" step="0.1" value="4.8" />
+        <div class="muted small">B pornește mai tare.</div>
+      </div>
+
+      <div class="control">
+        <label>
+          <span>Moment oboseală Elev B (minute)</span>
+          <span class="val"><span id="fatVal">5</span> min</span>
+        </label>
+        <input id="fat" type="range" min="1" max="12" step="1" value="5" />
+        <div class="muted small">După acest moment, B își schimbă viteza.</div>
+      </div>
+
+      <div class="control">
+        <label>
+          <span>Viteză Elev B după oboseală (m/s)</span>
+          <span class="val"><span id="vB2Val">3.0</span></span>
+        </label>
+        <input id="vB2" type="range" min="1.0" max="6.0" step="0.1" value="3.0" />
+        <div class="muted small">Oboseala → pantă mai mică.</div>
+      </div>
+
+      <div class="control">
+        <label>
+          <span>Viteză animație (x)</span>
+          <span class="val"><span id="speedVal">1.2</span>x</span>
+        </label>
+        <input id="speed" type="range" min="0.5" max="3.0" step="0.1" value="1.2" />
+        <div class="muted small">Mai rapid / mai lent.</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px; background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));">
+      <h2>2) Tabel automat (pe minut)</h2>
+      <div class="muted small">Valorile sunt calculate din modelul matematic și se actualizează când schimbi parametrii.</div>
+      <div style="margin-top:10px; overflow:auto; border-radius: 14px;">
+        <table id="dataTable" aria-label="Tabel distanțe pe minut">
+          <thead>
+            <tr>
+              <th>Minut</th>
+              <th>dA (m)</th>
+              <th>dB (m)</th>
+              <th>Cine conduce?</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Tasks -->
+  <aside class="card">
+    <h2>3) Itemi (cu feedback)</h2>
+    <div class="muted small">
+      Folosește graficul și tabelul. Răspunde numeric unde se cere. Acceptă răspunsuri cu o toleranță mică.
+    </div>
+
+    <div class="q" id="q1">
+      <p><b>Q1.</b> Dacă Elev A are viteză constantă <span class="mono">vA</span>, atunci formula distanței după <span class="mono">t</span> secunde este:</p>
+      <div class="row">
+        <input id="ans1" type="text" placeholder="ex: d=v*t" />
+        <button class="secondary" data-check="1">Verifică</button>
+      </div>
+      <div class="feedback" id="fb1"></div>
+    </div>
+
+    <div class="q" id="q2">
+      <p><b>Q2.</b> La durata setată, câți metri parcurge Elev A în <b>1 minut</b>?</p>
+      <div class="muted small">Atenție: 1 minut = 60 secunde.</div>
+      <div class="row" style="margin-top:6px">
+        <input id="ans2" type="number" step="1" placeholder="metri" />
+        <button class="secondary" data-check="2">Verifică</button>
+      </div>
+      <div class="feedback" id="fb2"></div>
+    </div>
+
+    <div class="q" id="q3">
+      <p><b>Q3.</b> În ce minut (întreg) are loc <b>schimbarea de pantă</b> pentru Elev B?</p>
+      <div class="row">
+        <input id="ans3" type="number" step="1" placeholder="minut" />
+        <button class="secondary" data-check="3">Verifică</button>
+      </div>
+      <div class="feedback" id="fb3"></div>
+    </div>
+
+    <div class="q" id="q4">
+      <p><b>Q4.</b> Cine este lider la finalul simulării (A sau B)?</p>
+      <div class="row">
+        <input id="ans4" type="text" placeholder="A / B" />
+        <button class="secondary" data-check="4">Verifică</button>
+      </div>
+      <div class="feedback" id="fb4"></div>
+    </div>
+
+    <div class="q" id="q5">
+      <p><b>Q5.</b> Calculează viteza medie a Elevului B pe toată durata (m/s).</p>
+      <div class="muted small">
+        Viteza medie = distanța totală / timpul total (în secunde).
+      </div>
+      <div class="row" style="margin-top:6px">
+        <input id="ans5" type="number" step="0.01" placeholder="m/s" />
+        <button class="secondary" data-check="5">Verifică</button>
+      </div>
+      <div class="feedback" id="fb5"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px; background: rgba(0,0,0,.12)">
+      <h2>4) Interpretare rapidă</h2>
+      <ul class="muted" style="margin:8px 0 0; padding-left: 18px; line-height: 1.35">
+        <li><b>Panta</b> pe grafic = <b>viteza</b>.</li>
+        <li><b>Pantă constantă</b> = ritm constant (rezistență bună).</li>
+        <li><b>Scăderea pantei</b> = oboseală.</li>
+      </ul>
+      <div class="muted small" style="margin-top:10px">
+        Sugestie: compară curbele A și B și descrie în 2 propoziții ce strategie e mai eficientă.
+      </div>
+    </div>
+
+  </aside>
+</main>
+
+<script>
+(() => {
+  // ---------- Elements
+  const canvas = document.getElementById('plot');
+  const ctx = canvas.getContext('2d');
+
+  const el = (id) => document.getElementById(id);
+
+  const dur = el('dur');
+  const vA = el('vA');
+  const vB1 = el('vB1');
+  const fat = el('fat');
+  const vB2 = el('vB2');
+  const speed = el('speed');
+
+  const durVal = el('durVal');
+  const vAVal = el('vAVal');
+  const vB1Val = el('vB1Val');
+  const fatVal = el('fatVal');
+  const vB2Val = el('vB2Val');
+  const speedVal = el('speedVal');
+
+  const btnPlay = el('btnPlay');
+  const btnPause = el('btnPause');
+  const btnReset = el('btnReset');
+
+  const tNowEl = el('tNow');
+  const dAEl = el('dA');
+  const dBEl = el('dB');
+  const leaderEl = el('leader');
+
+  const tableBody = document.querySelector('#dataTable tbody');
+
+  // ---------- Model
+  // time in minutes (tMin). Distances in meters.
+  function distA(tMin){
+    const v = parseFloat(vA.value); // m/s
+    return v * (tMin * 60);
+  }
+
+  function distB(tMin){
+    const vb1 = parseFloat(vB1.value);
+    const vb2 = parseFloat(vB2.value);
+    const tf = parseInt(fat.value, 10); // minutes
+    if (tMin <= tf){
+      return vb1 * (tMin * 60);
+    }
+    const dBefore = vb1 * (tf * 60);
+    const afterMin = (tMin - tf);
+    return dBefore + vb2 * (afterMin * 60);
+  }
+
+  function leaderAt(tMin){
+    const a = distA(tMin);
+    const b = distB(tMin);
+    if (Math.abs(a - b) < 1e-9) return 'Egal';
+    return a > b ? 'A' : 'B';
+  }
+
+  // ---------- Table builder (per minute)
+  function rebuildTable(){
+    tableBody.innerHTML = '';
+    const T = parseInt(dur.value, 10);
+    for (let m = 0; m <= T; m++){
+      const a = Math.round(distA(m));
+      const b = Math.round(distB(m));
+      const who = leaderAt(m);
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${m}</td>
+        <td>${a}</td>
+        <td>${b}</td>
+        <td style="text-align:left">${who}</td>
+      `;
+      tableBody.appendChild(tr);
+    }
+  }
+
+  // ---------- Plot rendering
+  function clear(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  function drawGrid(x0,y0,w,h, xTicks, yTicks){
+    ctx.save();
+    ctx.globalAlpha = 0.45;
+    ctx.strokeStyle = 'rgba(255,255,255,.18)';
+    ctx.lineWidth = 1;
+
+    // vertical
+    for (let i=0;i<=xTicks;i++){
+      const x = x0 + (w*i/xTicks);
+      ctx.beginPath();
+      ctx.moveTo(x, y0);
+      ctx.lineTo(x, y0+h);
+      ctx.stroke();
+    }
+    // horizontal
+    for (let j=0;j<=yTicks;j++){
+      const y = y0 + (h*j/yTicks);
+      ctx.beginPath();
+      ctx.moveTo(x0, y);
+      ctx.lineTo(x0+w, y);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawAxes(x0,y0,w,h, maxT, maxD){
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,.55)';
+    ctx.lineWidth = 2;
+
+    // x axis
+    ctx.beginPath();
+    ctx.moveTo(x0, y0+h);
+    ctx.lineTo(x0+w, y0+h);
+    ctx.stroke();
+
+    // y axis
+    ctx.beginPath();
+    ctx.moveTo(x0, y0);
+    ctx.lineTo(x0, y0+h);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    ctx.font = '14px system-ui';
+
+    ctx.fillText('t (minute)', x0+w-85, y0+h-10);
+    ctx.save();
+    ctx.translate(x0+12, y0+16);
+    ctx.rotate(-Math.PI/2);
+    ctx.fillText('d (metri)', 0, 0);
+    ctx.restore();
+
+    // tick labels
+    ctx.fillStyle = 'rgba(255,255,255,.70)';
+    ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+
+    // x labels
+    for (let i=0;i<=maxT;i+=2){
+      const x = x0 + (w*i/maxT);
+      ctx.fillText(String(i), x-4, y0+h+18);
+    }
+
+    // y labels (0..maxD)
+    const step = niceStep(maxD);
+    for (let d=0; d<=maxD; d+=step){
+      const y = y0+h - (h*d/maxD);
+      ctx.fillText(String(d), x0-44, y+4);
+    }
+    ctx.restore();
+  }
+
+  function niceStep(maxD){
+    // pick a readable step: 100, 200, 250, 500, 1000...
+    const targets = [50,100,200,250,500,1000,2000,2500,5000,10000];
+    const approx = maxD/5;
+    let best = targets[0];
+    for (const t of targets){
+      if (Math.abs(t-approx) < Math.abs(best-approx)) best = t;
+    }
+    // ensure at least 3 steps
+    if (maxD / best < 3) best = Math.max(50, Math.floor(maxD/3/50)*50);
+    return Math.max(50, best);
+  }
+
+  function mapX(tMin, x0, w, maxT){
+    return x0 + (w * tMin / maxT);
+  }
+  function mapY(dist, y0, h, maxD){
+    return y0 + h - (h * dist / maxD);
+  }
+
+  function drawCurve(colorStr, fnDist, maxT, maxD, x0,y0,w,h, tLimit){
+    ctx.save();
+    ctx.strokeStyle = colorStr;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+
+    const steps = 240;
+    for (let i=0;i<=steps;i++){
+      const t = (maxT*i/steps);
+      if (t > tLimit) break;
+      const d = fnDist(t);
+      const x = mapX(t, x0,w,maxT);
+      const y = mapY(d, y0,h,maxD);
+      if (i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function drawLegend(x, y){
+    ctx.save();
+    ctx.font = '13px system-ui';
+    ctx.fillStyle = 'rgba(255,255,255,.80)';
+    ctx.fillText('Legendă:', x, y);
+
+    // A
+    ctx.strokeStyle = 'rgba(57,217,138,.95)';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(x, y+18); ctx.lineTo(x+22, y+18); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.78)';
+    ctx.fillText('Elev A (ritm constant)', x+30, y+22);
+
+    // B
+    ctx.strokeStyle = 'rgba(122,162,255,.95)';
+    ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(x, y+38); ctx.lineTo(x+22, y+38); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.78)';
+    ctx.fillText('Elev B (oboseală: schimbare pantă)', x+30, y+42);
+
+    ctx.restore();
+  }
+
+  function drawMarker(tMin, d, colorStr, x0,y0,w,h, maxT,maxD){
+    const x = mapX(tMin, x0,w,maxT);
+    const y = mapY(d, y0,h,maxD);
+    ctx.save();
+    ctx.fillStyle = colorStr;
+    ctx.beginPath();
+    ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function computeMaxD(maxT){
+    // maximum distance among A and B at time maxT
+    const a = distA(maxT);
+    const b = distB(maxT);
+    const max = Math.max(a,b);
+    // pad 10%
+    const padded = Math.ceil(max * 1.12 / 50) * 50;
+    return Math.max(200, padded);
+  }
+
+  // ---------- Animation state
+  let running = false;
+  let tMin = 0; // current time in minutes
+  let lastTs = null;
+
+  function reset(){
+    running = false;
+    tMin = 0;
+    lastTs = null;
+    render();
+    updateHUD();
+  }
+
+  function updateHUD(){
+    const a = Math.round(distA(tMin));
+    const b = Math.round(distB(tMin));
+    tNowEl.textContent = tMin.toFixed(1);
+    dAEl.textContent = String(a);
+    dBEl.textContent = String(b);
+
+    const lead = leaderAt(tMin);
+    leaderEl.textContent = lead;
+  }
+
+  function render(){
+    clear();
+
+    const pad = 70;
+    const x0 = pad;
+    const y0 = 26;
+    const w  = canvas.width - pad - 24;
+    const h  = canvas.height - 90;
+
+    const T = parseInt(dur.value, 10);
+    const maxD = computeMaxD(T);
+
+    // Background subtle gradient overlay (drawn as rect)
+    ctx.save();
+    const g = ctx.createLinearGradient(0,0,0,canvas.height);
+    g.addColorStop(0,'rgba(255,255,255,.04)');
+    g.addColorStop(1,'rgba(255,255,255,.01)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.restore();
+
+    drawGrid(x0,y0,w,h, T, 6);
+    drawAxes(x0,y0,w,h, T, maxD);
+
+    // draw full curves lightly
+    drawCurve('rgba(57,217,138,.35)', distA, T, maxD, x0,y0,w,h, T);
+    drawCurve('rgba(122,162,255,.35)', distB, T, maxD, x0,y0,w,h, T);
+
+    // draw animated portions bold up to current tMin
+    drawCurve('rgba(57,217,138,.95)', distA, T, maxD, x0,y0,w,h, tMin);
+    drawCurve('rgba(122,162,255,.95)', distB, T, maxD, x0,y0,w,h, tMin);
+
+    // fatigue marker (vertical line)
+    const tf = parseInt(fat.value,10);
+    if (tf <= T){
+      const xf = mapX(tf, x0,w,T);
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255,209,102,.55)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6,6]);
+      ctx.beginPath();
+      ctx.moveTo(xf, y0);
+      ctx.lineTo(xf, y0+h);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,209,102,.85)';
+      ctx.font = '12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+      ctx.fillText('oboseală B', xf-34, y0+16);
+      ctx.restore();
+    }
+
+    // markers at current time
+    drawMarker(tMin, distA(tMin), 'rgba(57,217,138,.95)', x0,y0,w,h, T,maxD);
+    drawMarker(tMin, distB(tMin), 'rgba(122,162,255,.95)', x0,y0,w,h, T,maxD);
+
+    drawLegend(x0+10, y0+10);
+
+    // footer hints
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,255,255,.70)';
+    ctx.font = '12px system-ui';
+    ctx.fillText('Hint: panta = viteza. Scăderea pantei la B indică oboseală.', x0, canvas.height - 18);
+    ctx.restore();
+  }
+
+  function step(ts){
+    if (!running){
+      lastTs = null;
+      return;
+    }
+    if (lastTs === null) lastTs = ts;
+    const dt = (ts - lastTs) / 1000; // seconds
+    lastTs = ts;
+
+    const T = parseInt(dur.value,10);
+    const s = parseFloat(speed.value);
+
+    // Advance time in minutes:
+    // base: 1 real second = 0.20 minutes (12 sec -> 2.4 min) scaled by speed
+    const base = 0.20;
+    tMin += dt * base * s;
+
+    if (tMin >= T){
+      tMin = T;
+      running = false;
+    }
+
+    render();
+    updateHUD();
+    requestAnimationFrame(step);
+  }
+
+  // ---------- Inputs update
+  function syncLabels(){
+    durVal.textContent = dur.value;
+    vAVal.textContent = parseFloat(vA.value).toFixed(1);
+    vB1Val.textContent = parseFloat(vB1.value).toFixed(1);
+    fatVal.textContent = fat.value;
+    vB2Val.textContent = parseFloat(vB2.value).toFixed(1);
+    speedVal.textContent = parseFloat(speed.value).toFixed(1);
+
+    // Make fatigue max sensible relative to duration
+    fat.max = Math.max(1, Math.min(12, parseInt(dur.value,10)));
+    if (parseInt(fat.value,10) > parseInt(fat.max,10)){
+      fat.value = fat.max;
+      fatVal.textContent = fat.value;
+    }
+  }
+
+  function recomputeAll(){
+    syncLabels();
+    rebuildTable();
+    render();
+    updateHUD();
+    // also refresh feedback (optional: keep as is)
+  }
+
+  [dur,vA,vB1,fat,vB2,speed].forEach(inp => {
+    inp.addEventListener('input', () => {
+      recomputeAll();
+    });
+  });
+
+  // ---------- Buttons
+  btnPlay.addEventListener('click', () => {
+    if (tMin >= parseInt(dur.value,10)) tMin = 0;
+    running = true;
+    requestAnimationFrame(step);
+  });
+
+  btnPause.addEventListener('click', () => {
+    running = false;
+    updateHUD();
+  });
+
+  btnReset.addEventListener('click', () => {
+    reset();
+  });
+
+  // ---------- Quiz checks
+  function setFeedback(id, msg, cls){
+    const fb = el('fb'+id);
+    fb.className = 'feedback ' + (cls || '');
+    fb.textContent = msg;
+  }
+
+  function approxEq(a,b,tol){
+    return Math.abs(a-b) <= tol;
+  }
+
+  function check(id){
+    const T = parseInt(dur.value,10);
+    const vAms = parseFloat(vA.value);
+    const vb1 = parseFloat(vB1.value);
+    const vb2 = parseFloat(vB2.value);
+    const tf = parseInt(fat.value,10);
+
+    if (id === 1){
+      const s = (el('ans1').value || '').trim().toLowerCase().replace(/\s+/g,'');
+      const ok = (s.includes('d=') && s.includes('v') && (s.includes('*t') || s.includes('t*v') || s.includes('v·t') || s.includes('v*t')));
+      if (ok) setFeedback(1, 'Corect: pentru viteză constantă, d = v · t.', 'ok');
+      else setFeedback(1, 'Încearcă: folosește forma d = v · t (distanță = viteză × timp).', 'warn');
+      return;
+    }
+
+    if (id === 2){
+      const ans = parseFloat(el('ans2').value);
+      if (Number.isNaN(ans)) return setFeedback(2,'Scrie un număr (metri).','warn');
+      const expected = vAms * 60; // meters in 1 minute
+      if (approxEq(ans, expected, 2)) setFeedback(2, `Corect: ${expected.toFixed(1)} m într-un minut.`, 'ok');
+      else setFeedback(2, `Nu încă. Hint: d = v · 60. Aștept ~ ${expected.toFixed(1)} m.`, 'bad');
+      return;
+    }
+
+    if (id === 3){
+      const ans = parseInt(el('ans3').value,10);
+      if (!Number.isFinite(ans)) return setFeedback(3,'Scrie un minut întreg.','warn');
+      if (ans === tf) setFeedback(3, `Corect: schimbarea pantei este la minutul ${tf}.`, 'ok');
+      else setFeedback(3, `Nu. Verifică linia punctată galbenă (oboseală B) și valoarea „Moment oboseală”.`, 'bad');
+      return;
+    }
+
+    if (id === 4){
+      const s = (el('ans4').value || '').trim().toUpperCase();
+      const aEnd = distA(T);
+      const bEnd = distB(T);
+      const expected = (Math.abs(aEnd-bEnd) < 1e-9) ? 'Egal' : (aEnd > bEnd ? 'A' : 'B');
+      if (expected === 'Egal'){
+        if (s === 'EGAL' || s === 'E') setFeedback(4,'Corect: la final este egalitate.', 'ok');
+        else setFeedback(4,'Aproape. La final este egalitate (scrie EGAL).', 'warn');
+      } else {
+        if (s === expected) setFeedback(4, `Corect: lider la final este ${expected}.`, 'ok');
+        else setFeedback(4, `Nu. Uită-te la distanțele finale din HUD: dA și dB.`, 'bad');
+      }
+      return;
+    }
+
+    if (id === 5){
+      const ans = parseFloat(el('ans5').value);
+      if (Number.isNaN(ans)) return setFeedback(5,'Scrie un număr (m/s).','warn');
+      const dTot = distB(T);
+      const expected = dTot / (T*60);
+      if (approxEq(ans, expected, 0.08)) setFeedback(5, `Corect: v_med,B ≈ ${expected.toFixed(2)} m/s.`, 'ok');
+      else setFeedback(5, `Nu încă. Hint: v_med = d_total / (T·60). Aștept ~ ${expected.toFixed(2)}.`, 'bad');
+      return;
+    }
+  }
+
+  document.querySelectorAll('button[data-check]').forEach(b => {
+    b.addEventListener('click', () => check(parseInt(b.getAttribute('data-check'),10)));
+  });
+
+  // ---------- Init
+  syncLabels();
+  rebuildTable();
+  render();
+  updateHUD();
+
+})();
+</script>
+</body>
+</html>
